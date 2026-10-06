@@ -102,6 +102,8 @@ Each header entry uses an ID-based prefix inspired by static HPACK tables:
 | `4` | `Connection` | `9` | `Cache-Control` |
 | `5` | `Date` | `10` | `Last-Modified` |
 
+This minimal static file server implementation only emits `Content-Type` (ID `1`) and `Content-Length` (ID `2`) on the wire. The remaining eight table entries are standardized for protocol completeness and forward use (e.g., future support for conditional requests, caching, or virtual hosting), ensuring consistent numeric assignments across compatible implementations.
+
 ---
 
 ## 7. Error Handling & Stream Synchronization
