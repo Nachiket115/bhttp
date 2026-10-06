@@ -1,0 +1,101 @@
+================================================================================
+bhttp Protocol — Captured & Annotated Frame Hexdump
+Capture command: ./bin/bcurl -v localhost:9000/index.html
+================================================================================
+
+--------------------------------------------------------------------------------
+1. REQUEST FRAME (20 bytes total)
+--------------------------------------------------------------------------------
+
+Raw Hexdump:
+  0000  01 01 00 00 00 00 00 0c  0b 2f 69 6e 64 65 78 2e  |........./index.|
+  0010  68 74 6d 6c                                       |html|
+
+Byte-by-Byte Breakdown:
+
+[ Frame Header: 8 bytes ]
+  Offset  Bytes        Field         Value        Description
+  -----------------------------------------------------------------------------
+  0000    01           version       0x01         Protocol version 1
+  0001    01           type          0x01         Frame type = REQUEST
+  0002    00           flags         0x00         Reserved flags (must be 0x00)
+  0003    00           header_count  0            Number of headers attached (0)
+  0004    00 00 00 0c  length        12           Payload size in bytes (BE uint32)
+
+[ Payload: 12 bytes ]
+  Offset  Bytes        Field         Value        Description
+  -----------------------------------------------------------------------------
+  0008    0b           path_len      11           Length of path string (0x0b = 11)
+  0009    2f 69 6e 64  path          /index.html  ASCII path characters:
+          65 78 2e 68                             2f = '/'  69 = 'i'  6e = 'n'
+          74 6d 6c                                64 = 'd'  65 = 'e'  78 = 'x'
+                                                  2e = '.'  68 = 'h'  74 = 't'
+                                                  6d = 'm'  6c = 'l'
+
+Total Frame Length: 8 (header) + 12 (payload) = 20 bytes.
+
+
+--------------------------------------------------------------------------------
+2. RESPONSE FRAME (244 bytes total)
+--------------------------------------------------------------------------------
+
+Raw Hexdump:
+  0000  01 02 00 02 00 00 00 ec  00 c8 01 00 09 74 65 78  |.............tex|
+  0010  74 2f 68 74 6d 6c 02 00  03 32 31 36 3c 21 44 4f  |t/html...216<!DO|
+  0020  43 54 59 50 45 20 68 74  6d 6c 3e 0a 3c 68 74 6d  |CTYPE html>.<htm|
+  0030  6c 3e 0a 3c 68 65 61 64  3e 0a 20 20 20 20 3c 6d  |l>.<head>.    <m|
+  0040  65 74 61 20 63 68 61 72  73 65 74 3d 22 75 74 66  |eta charset="utf|
+  0050  2d 38 22 3e 0a 20 20 20  20 3c 74 69 74 6c 65 3e  |-8">.    <title>|
+  0060  62 68 74 74 70 20 74 65  73 74 3c 2f 74 69 74 6c  |bhttp test</titl|
+  0070  65 3e 0a 20 20 20 20 3c  6c 69 6e 6b 20 72 65 6c  |e>.    <link rel|
+  0080  3d 22 73 74 79 6c 65 73  68 65 65 74 22 20 68 72  |="stylesheet" hr|
+  0090  65 66 3d 22 73 74 79 6c  65 2e 63 73 73 22 3e 0a  |ef="style.css">.|
+  00a0  3c 2f 68 65 61 64 3e 0a  3c 62 6f 64 79 3e 0a 20  |</head>.<body>. |
+  00b0  20 20 20 3c 68 31 3e 69  74 20 77 6f 72 6b 73 3c  |   <h1>it works<|
+  00c0  2f 68 31 3e 0a 20 20 20  20 3c 70 3e 73 65 72 76  |/h1>.    <p>serv|
+  00d0  65 64 20 6f 76 65 72 20  62 68 74 74 70 2f 31 3c  |ed over bhttp/1<|
+  00e0  2f 70 3e 0a 3c 2f 62 6f  64 79 3e 0a 3c 2f 68 74  |/p>.</body>.</ht|
+  00f0  6d 6c 3e 0a                                       |ml>.|
+
+Byte-by-Byte Breakdown:
+
+[ Frame Header: 8 bytes ]
+  Offset  Bytes        Field         Value        Description
+  -----------------------------------------------------------------------------
+  0000    01           version       0x01         Protocol version 1
+  0001    02           type          0x02         Frame type = RESPONSE
+  0002    00           flags         0x00         Reserved flags (must be 0x00)
+  0003    02           header_count  2            2 headers included
+  0004    00 00 00 ec  length        236          Payload size: 0xec = 236 bytes (BE uint32)
+
+[ Payload Part 1: Status Code (2 bytes) ]
+  Offset  Bytes        Field         Value        Description
+  -----------------------------------------------------------------------------
+  0008    00 c8        status        200          HTTP status 200 OK (0x00c8, BE uint16)
+
+[ Payload Part 2: Headers (18 bytes total) ]
+  Header 1: Content-Type
+  Offset  Bytes        Field         Value        Description
+  -----------------------------------------------------------------------------
+  000a    01           id            1            Predefined ID 1 = "Content-Type"
+  000b    00 09        value_len     9            Value byte length (BE uint16)
+  000d    74 65 78 74  value         text/html    MIME type string
+          2f 68 74 6d
+          6c
+
+  Header 2: Content-Length
+  Offset  Bytes        Field         Value        Description
+  -----------------------------------------------------------------------------
+  0016    02           id            2            Predefined ID 2 = "Content-Length"
+  0017    00 03        value_len     3            Value byte length (BE uint16)
+  0019    32 31 36     value         216          ASCII digits "216" (length in bytes)
+
+[ Payload Part 3: Body (216 bytes) ]
+  Offset  Bytes                                   Description
+  -----------------------------------------------------------------------------
+  001c    3c 21 44 4f 43 54 59 50 ... 6d 6c 3e 0a File contents of www/index.html
+  ...     (216 bytes total)                       Starts with "<!DOCTYPE html>\n"
+  00f3                                            Ends with "</html>\n"
+
+Total Frame Length: 8 (header) + 2 (status) + 12 (hdr1) + 6 (hdr2) + 216 (body) = 244 bytes.
+Payload Length Check: 2 + 12 + 6 + 216 = 236 (0x000000ec) matching header length field exactly.
